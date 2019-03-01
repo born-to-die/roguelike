@@ -1,0 +1,16 @@
+@map tile 21 stalagmite
+@map tile 0 floorDungTop
+@map tile 41 floorLavaHole
+
+@player position 6 6
+
+/@map fill walls 21
+/@map way 20 0 0
+@map set walls 41 4 4
+
+@player item crowbar
+@player item crowbar
+@player item shotgun
+
+/@spawn unit snake area 0 0 5 5
+@spawn item crowbar area 0 0 5 5
