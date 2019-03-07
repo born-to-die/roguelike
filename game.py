@@ -27,7 +27,7 @@ class Game:
     windowBgDefault = (0, 0, 0)
 
     # LIST OBJECTS
-    player = player.Player()
+    player = [player.Player(), player.Player()]
     listUnits = []
     listItems = []
     listDecors = []
@@ -90,6 +90,8 @@ class Game:
     assTileType = {}
 
     cellSprite = pygame.image.load(os.path.join('images', 'cell.png'))
+
+    active_player = 0
     
     # TEST
     CONST_PI  = 3.1415926535
@@ -122,16 +124,16 @@ class Game:
         self.surfCharacter.fill((25, 25, 25))
         self.screen.blit(self.surfCharacter, (640, 0))
         
-        textSprite = self.fontDefault.render(self.player.name, 0, (0, 100, 0))
+        textSprite = self.fontDefault.render(self.player[game.active_player].name, 0, (0, 100, 0))
         self.screen.blit(textSprite, (650, 5))
 
-        textHealth = self.fontDefault.render(u"Здоровье: " + str(self.player.health), 0, (0, 100, 0))
+        textHealth = self.fontDefault.render(u"Здоровье: " + str(self.player[game.active_player].health), 0, (0, 100, 0))
         self.screen.blit(textHealth, (650, 15))
 
-        textHealth = self.fontDefault.render(u"Режим: " + self.player.interaction, 0, (0, 100, 0))
+        textHealth = self.fontDefault.render(u"Режим: " + self.player[game.active_player].interaction, 0, (0, 100, 0))
         self.screen.blit(textHealth, (760, 15))
 
-        textMissClose = self.fontDefault.render(u"Навык владения ближним боем: " + str(10 - self.player.missClose), 0, (0, 100, 0))
+        textMissClose = self.fontDefault.render(u"Навык владения ближним боем: " + str(10 - self.player[game.active_player].missClose), 0, (0, 100, 0))
         self.screen.blit(textMissClose, (650, 25))
         
 
@@ -142,8 +144,8 @@ class Game:
                 
                 self.screen.blit(self.cellSprite, (j * 64 + 640, i * 64 + 128))
                 
-                if(self.player.items[i * 4 + j] != 0):
-                    self.screen.blit(self.player.items[i * 4 + j].sprite, (j * 64 + 640, i * 64 + 128))
+                if(self.player[game.active_player].items[i * 4 + j] != 0):
+                    self.screen.blit(self.player[game.active_player].items[i * 4 + j].sprite, (j * 64 + 640, i * 64 + 128))
                 
 
     def writeEvent(self, text, color):
@@ -219,20 +221,20 @@ class Game:
 
                     elif(word == "@player"):
                         
-                        if(words[currentWord + 1] == "position"):
+                        if(words[currentWord + 2] == "position"):
                             
-                            self.player.setPosition(int(words[currentWord + 2]), int(words[currentWord + 3]))
+                            self.player[int(words[currentWord + 1])].setPosition(int(words[currentWord + 3]), int(words[currentWord + 4]))
                             break
 
                         if(words[currentWord + 1] == "hp"):
                             
-                            self.player.health = int(words[currentWord + 2])
+                            self.player[game.active_player].health = int(words[currentWord + 2])
                             break
 
                         if(words[currentWord + 1] == "area"):
                             
-                            self.player.x = random.randint(int(words[currentWord + 2]), int(words[currentWord + 4]))
-                            self.player.y = random.randint(int(words[currentWord + 3]), int(words[currentWord + 5]))           
+                            self.player[game.active_player].x = random.randint(int(words[currentWord + 2]), int(words[currentWord + 4]))
+                            self.player[game.active_player].y = random.randint(int(words[currentWord + 3]), int(words[currentWord + 5]))           
                             break
 
                         if(words[currentWord + 1] == "item"):
@@ -568,12 +570,12 @@ class Game:
             #for j in range(10):
         self.surfGame.fill((0, 0, 0))
 
-        self.surfGame.blit(self.assTiles[self.landmap[self.player.y][self.player.x]], (64 * self.player.x, 64 * self.player.y))
+        self.surfGame.blit(self.assTiles[self.landmap[self.player[game.active_player].y][self.player[game.active_player].x]], (64 * self.player[game.active_player].x, 64 * self.player[game.active_player].y))
 
         for i in range(72):
                 
-            c = self.CastRay(self.player.x, self.player.y, 2, i * 5)
-            self.Los(self.player.x, self.player.y, c[0], c[1])
+            c = self.CastRay(self.player[game.active_player].x, self.player[game.active_player].y, 2, i * 5)
+            self.Los(self.player[game.active_player].x, self.player[game.active_player].y, c[0], c[1])
                     
         #self.surfGame.blit(self.holeSprite, (self.coordstairSprites[0] * 64,
                                         #self.coordstairSprites[1] * 64))
@@ -671,7 +673,7 @@ class Game:
 
     def RenderPlayer(self):
 
-        self.player.Render(self, False)
+        self.player[game.active_player].Render(self, False)
 
     def RenderAll(self):
 
@@ -685,6 +687,11 @@ class Game:
             if(self.listUnits[i].health < 1 and self.listUnits[i].delete):
                 del self.listUnits[i]
                             
+        for i in range(len(self.player)):
+            if(i != self.active_player):
+                self.player[i].Render(self, True)
+                print("@")
+
         # RENDER LANDMAP
         self.Render()
 
@@ -713,7 +720,7 @@ class Game:
                 self.listUnits[i].Render(self, False)
                     
         # RENDER PLAYER                        
-        self.player.Render(self, True)
+        self.player[game.active_player].Render(self, True)
         
         # UPDATE & RENDER ENEMIES
         for i in range(len(self.listUnits)):
@@ -747,9 +754,9 @@ class Game:
 game = Game()
 
 if(config.enterNamePlayer):
-    game.player.name = game.readLine(300, 150, u"Введите свое имя:")
+    game.player[game.active_player].name = game.readLine(300, 150, u"Введите свое имя:")
 else:
-    game.player.name = u"Игрок"
+    game.player[game.active_player].name = u"Игрок"
 
 game.loadMap()
 #game.genMap()
@@ -786,75 +793,83 @@ while game.life:
                 game.life = False
                 
                 break
+
+            if(game.active_player != len(game.player)):
             
-            if(game.player.health > 0):
-                
-                if event.key == K_w:
+                if(game.player[game.active_player].health > 0):
                     
-                    game.player.Action(game, 0)
-                    turn = True
-                    
-                elif event.key == K_d:
-                    
-                    game.player.Action(game, 1)
-                    turn = True
-                    
-                elif event.key == K_x:
-                    
-                    game.player.Action(game, 2)
-                    turn = True
-                    
-                elif event.key == K_a:
-                    
-                    game.player.Action(game, 3)
-                    turn = True
-                    
-                elif event.key == K_SPACE or event.key == K_s:
-                    
-                    game.player.Action(game, 4)
-                    turn = True
+                    if event.key == K_w:
+                        
+                        game.player[game.active_player].Action(game, 0)
+                        turn = True
+                        
+                    elif event.key == K_d:
+                        
+                        game.player[game.active_player].Action(game, 1)
+                        turn = True
+                        
+                    elif event.key == K_x:
+                        
+                        game.player[game.active_player].Action(game, 2)
+                        turn = True
+                        
+                    elif event.key == K_a:
+                        
+                        game.player.Action(game, 3)
+                        turn = True
+                        
+                    elif event.key == K_SPACE or event.key == K_s:
+                        
+                        game.player.Action(game, 4)
+                        turn = True
 
-                elif event.key == K_t:
-                    turn = True
-                    game.player.Action(game, 5)
+                    elif event.key == K_t:
+                        turn = True
+                        game.player[game.active_player].Action(game, 5)
 
-                elif event.key == K_e:
-                    turn = True
-                    game.player.Action(game, 7)
+                    elif event.key == K_e:
+                        turn = True
+                        game.player[game.active_player].Action(game, 7)
 
-                elif event.key == K_q:
-                    turn = True
-                    game.player.Action(game, 8)
+                    elif event.key == K_q:
+                        turn = True
+                        game.player[game.active_player].Action(game, 8)
 
-                elif event.key == K_z:
-                    turn = True
-                    game.player.Action(game, 9)
+                    elif event.key == K_z:
+                        turn = True
+                        game.player[game.active_player].Action(game, 9)
 
-                elif event.key == K_c:
-                    turn = True
-                    game.player.Action(game, 10)
+                    elif event.key == K_c:
+                        turn = True
+                        game.player[game.active_player].Action(game, 10)
 
-                elif event.key == K_i:
-                    game.player.Action(game, 6)
+                    elif event.key == K_i:
+                        game.player[game.active_player].Action(game, 6)
 
-                elif event.key == K_v:
-                    game.player.Action(game, 11)
+                    elif event.key == K_v:
+                        game.player[game.active_player].Action(game, 11)
 
-                elif event.key == K_n:
-                    game.getNextMap()
+                    elif event.key == K_n:
+                        game.getNextMap()
 
-                elif event.key == K_BACKQUOTE:
-                    print("> ", end = '')
-                    command = input()
-                    if(command == "nextmap"):
-                        for i in range(0, len(game.listNextmaps)):
-                            print(game.listNextmaps[i] + str(game.alistNextmaps[game.listNextmaps[i]]))
-                    elif(command == "flip"):
-                        pygame.display.flip()
+                    elif event.key == K_BACKQUOTE:
+                        print("> ", end = '')
+                        command = input()
+                        if(command == "nextmap"):
+                            for i in range(0, len(game.listNextmaps)):
+                                print(game.listNextmaps[i] + str(game.alistNextmaps[game.listNextmaps[i]]))
+                        elif(command == "flip"):
+                            pygame.display.flip()
 
-                if(turn):
-                    game.RenderAll()
-                    game.checkExits()
+                    if(turn):
+                        game.RenderAll()
+                        game.checkExits()
+
+                game.active_player = game.active_player + 1
+
+            else:
+
+                game.active_player = 0
                     
 
     # TICK
