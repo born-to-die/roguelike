@@ -27,7 +27,7 @@ class Game:
     windowBgDefault = (0, 0, 0)
 
     # LIST OBJECTS
-    player = [player.Player(), player.Player()]
+    player = [player.Player()]
     listUnits = []
     listItems = []
     listDecors = []
@@ -574,7 +574,7 @@ class Game:
 
         for i in range(72):
                 
-            c = self.CastRay(self.player[game.active_player].x, self.player[game.active_player].y, 2, i * 5)
+            c = self.CastRay(self.player[game.active_player].x, self.player[game.active_player].y, 5, i * 5)
             self.Los(self.player[game.active_player].x, self.player[game.active_player].y, c[0], c[1])
                     
         #self.surfGame.blit(self.holeSprite, (self.coordstairSprites[0] * 64,
@@ -793,79 +793,81 @@ while game.life:
                 game.life = False
                 
                 break
-
-            if(game.active_player != len(game.player)):
             
-                if(game.player[game.active_player].health > 0):
+            if(game.player[game.active_player].health > 0):
                     
-                    if event.key == K_w:
+                if event.key == K_w:
                         
-                        game.player[game.active_player].Action(game, 0)
-                        turn = True
+                    game.player[game.active_player].Action(game, 0)
+                    turn = True
                         
-                    elif event.key == K_d:
+                elif event.key == K_d:
                         
-                        game.player[game.active_player].Action(game, 1)
-                        turn = True
+                    game.player[game.active_player].Action(game, 1)
+                    turn = True
                         
-                    elif event.key == K_x:
+                elif event.key == K_x:
                         
-                        game.player[game.active_player].Action(game, 2)
-                        turn = True
+                    game.player[game.active_player].Action(game, 2)
+                    turn = True
                         
-                    elif event.key == K_a:
+                elif event.key == K_a:
+
+                    game.player[game.active_player].Action(game, 3)
+                    #game.player.Action(game, 3)
+                    turn = True
                         
-                        game.player.Action(game, 3)
-                        turn = True
+                elif event.key == K_SPACE or event.key == K_s:
                         
-                    elif event.key == K_SPACE or event.key == K_s:
-                        
-                        game.player.Action(game, 4)
-                        turn = True
+                    game.player.Action(game, 4)
+                    turn = True
 
-                    elif event.key == K_t:
-                        turn = True
-                        game.player[game.active_player].Action(game, 5)
+                elif event.key == K_t:
+                    turn = True
+                    game.player[game.active_player].Action(game, 5)
 
-                    elif event.key == K_e:
-                        turn = True
-                        game.player[game.active_player].Action(game, 7)
+                elif event.key == K_e:
+                    turn = True
+                    game.player[game.active_player].Action(game, 7)
 
-                    elif event.key == K_q:
-                        turn = True
-                        game.player[game.active_player].Action(game, 8)
+                elif event.key == K_q:
+                    turn = True
+                    game.player[game.active_player].Action(game, 8)
 
-                    elif event.key == K_z:
-                        turn = True
-                        game.player[game.active_player].Action(game, 9)
+                elif event.key == K_z:
+                    turn = True
+                    game.player[game.active_player].Action(game, 9)
 
-                    elif event.key == K_c:
-                        turn = True
-                        game.player[game.active_player].Action(game, 10)
+                elif event.key == K_c:
+                    turn = True
+                    game.player[game.active_player].Action(game, 10)
 
-                    elif event.key == K_i:
-                        game.player[game.active_player].Action(game, 6)
+                elif event.key == K_i:
+                    game.player[game.active_player].Action(game, 6)
 
-                    elif event.key == K_v:
-                        game.player[game.active_player].Action(game, 11)
+                elif event.key == K_v:
+                    game.player[game.active_player].Action(game, 11)
 
-                    elif event.key == K_n:
-                        game.getNextMap()
+                elif event.key == K_n:
+                    game.getNextMap()
 
-                    elif event.key == K_BACKQUOTE:
-                        print("> ", end = '')
-                        command = input()
-                        if(command == "nextmap"):
-                            for i in range(0, len(game.listNextmaps)):
-                                print(game.listNextmaps[i] + str(game.alistNextmaps[game.listNextmaps[i]]))
-                        elif(command == "flip"):
-                            pygame.display.flip()
+                elif event.key == K_BACKQUOTE:
+                    print("> ", end = '')
+                    command = input()
+                    if(command == "nextmap"):
+                        for i in range(0, len(game.listNextmaps)):
+                            print(game.listNextmaps[i] + str(game.alistNextmaps[game.listNextmaps[i]]))
+                    elif(command == "flip"):
+                        pygame.display.flip()
 
-                    if(turn):
-                        game.RenderAll()
-                        game.checkExits()
+                if(turn):
+                    game.RenderAll()
+                    game.checkExits()
 
                 game.active_player = game.active_player + 1
+                
+                if(game.active_player == len(game.player)):
+                    game.active_player = 0
 
             else:
 
@@ -880,6 +882,6 @@ while game.life:
     game.screen.blit(game.surfGame, (0,0))
     pygame.display.update()
 
-    #print(game.clock.get_fps());
+    print(game.clock.get_fps());
       
 pygame.quit()
