@@ -1,0 +1,11 @@
+@map tile 0 floor_dung_human
+@map tile 1 floor_dung_human_hole
+
+@map tile-type 0 floor
+@map tile-type 1 wall
+
+@map fill 1
+
+@map waypoint 1 2 9 9 1 0
+
+@player position 1 2
